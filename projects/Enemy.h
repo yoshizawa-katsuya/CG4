@@ -4,10 +4,8 @@
 class Camera;
 class MapChipField;
 
-class Player
-{
+class Enemy {
 private:
-
 	// マップとの当たり判定情報
 	struct CollisionMapInfo {
 		bool isCeilingCollision = false;
@@ -62,29 +60,10 @@ public:
 
 	void SetTranslate(Vector3& translate) { worldTransform_.translation_ = translate; }
 
-
-	// スペースキーを押しているか
-	void ChaeckSpaceKey();
-
-	// 上行動
-	void UpMove();
-
-	// した行動
-	void DownMove();
-
 	// ポジション
 	Vector3 GetPosition() { return worldTransform_.translation_; }
 
-	void SetIsUpMove(bool flag);
-
-	void SetIsDownMove(bool flag);
-
-	bool GetIsUpMove() { return isUpMove; }
-
-	bool GetIsDownMove() { return isDownMove; }
-
 private:
-
 	//Transform変数を作る
 	WorldTransform worldTransform_;
 
@@ -137,20 +116,4 @@ private:
 	const float kBlank = 0.01f;
 	//マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
-
-	// スペースキーを押した時間
-	int kPushTime = 0;
-
-	// スペースキーを押しているか
-	bool isPushSpace = false;
-
-	// 上下移動のクールタイム
-	const int kMoveInterval = 30;
-
-	int kMoveTimer = 0;
-
-	bool isUpMove = false;
-
-	bool isDownMove = false;
 };
-

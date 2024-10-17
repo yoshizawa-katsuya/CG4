@@ -1,5 +1,5 @@
 #define NOMINMAX
-#include "Player.h"
+#include "Enemy.h"
 #include "imgui/imgui.h"
 #include "Input.h"
 #include <numbers>
@@ -7,28 +7,21 @@
 #include "Easing.h"
 #include "MapChipField.h"
 
-void Player::Initialize(Model* model) {
+void Enemy::Initialize(Model* model)
+{
 
 	model_ = model;
-	
+
 	worldTransform_.Initialize();
-
-	worldTransform_.translation_.y = 1.0f;
-
-	worldTransform_.UpdateMatrix();
 
 	Vector3 startVelocity = { 0.025f,0.0f,0.0f };
 
 	velocity_ = startVelocity;
 
-	kMoveTimer = 0;
 }
 
-void Player::Update() {
-
-	if (Input::GetInstance()->PushKey(DIK_R)) {
-		worldTransform_.translation_ = { 1.0f,6.5f,0.0f };
-	}
+void Enemy::Update()
+{
 
 	//移動入力
 	Move();
@@ -50,125 +43,23 @@ void Player::Update() {
 
 	WallCollision(collisionMapInfo);
 
-	// 旋回制御
-	if (turnTimer_ > 0.0f) {
-		turnTimer_ -= 1.0f / 60.0f;
-
-		// 左右の自キャラ角度テーブル
-		float destinationRotationYTable[] = { std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> *3.0f / 2.0f };
-
-		// 状態に応じた角度を取得する
-		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
-		// 自キャラの角度を設定する
-		worldTransform_.rotation_.y = turnFirstRotationY_ * EaseOut(turnTimer_) + destinationRotationY * (1 - EaseOut(turnTimer_));
-	}
-
 	worldTransform_.UpdateMatrix();
 
-#ifdef _DEBUG
-
-	ImGui::Begin("Player");
-	if (ImGui::TreeNode("Model")) {
-		ImGui::ColorEdit4("color", &model_->GetMaterialDataAddress().color.x);
-		ImGui::DragFloat3("translate", &worldTransform_.translation_.x, 0.01f);
-		ImGui::DragFloat3("rotate", &worldTransform_.rotation_.x, 0.01f);
-		ImGui::DragFloat3("scale", &worldTransform_.scale_.x, 0.01f);
-
-		ImGui::TreePop();
-	}
-	ImGui::End();
-
-#endif // _DEBUG	
-
 }
 
-void Player::Draw(Camera* camera) {
-
-	model_->Draw(worldTransform_, camera);
-
-}
-
-void Player::Move()
+void Enemy::Draw(Camera* camera)
 {
-#pragma region 元のコード
+	model_->Draw(worldTransform_, camera);
+}
 
-	//// 移動入力
-	//// 接地状態
-	//if (onGround_) {
-
-	//	// 左右移動操作
-	//	if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
-
-	//		// 左右加速
-	//		Vector3 acceleration = {};
-	//		if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
-	//			// 左移動中の右入力
-	//			if (velocity_.x < 0.0f) {
-	//				// 速度と逆方向に入力中は急ブレーキ
-	//				velocity_.x *= (1.0f - kAttenuation);
-	//			}
-	//			acceleration.x += kAcceleration;
-	//			if (lrDirection_ != LRDirection::kRight) {
-	//				lrDirection_ = LRDirection::kRight;
-	//				turnFirstRotationY_ = worldTransform_.rotation_.y;
-	//				turnTimer_ = 1.0f;
-	//			}
-	//		}
-	//		else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-	//			// 右入力中の左入力
-	//			if (velocity_.x > 0.0f) {
-	//				// 速度と逆方向に入力中は急ブレーキ
-	//				velocity_.x *= (1.0f - kAttenuation);
-	//			}
-	//			acceleration.x -= kAcceleration;
-	//			if (lrDirection_ != LRDirection::kLeft) {
-	//				lrDirection_ = LRDirection::kLeft;
-	//				turnFirstRotationY_ = worldTransform_.rotation_.y;
-	//				turnTimer_ = 1.0f;
-	//			}
-	//		}
-	//		// 加速/減速
-	//		velocity_.x += acceleration.x;
-
-	//		// 最大速度制限
-	//		velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
-
-	//	}
-	//	else {
-
-	//		// 非入力時には移動減衰をかける
-	//		velocity_.x *= (1.0f - kAttenuation);
-	//	}
+void Enemy::Move()
+{
 
 
-
-	//	if (Input::GetInstance()->PushKey(DIK_UP)) {
-	//		// ジャンプ加速
-	//		velocity_.y += kJumpAcceleration;
-	//		onGround_ = false;
-	//	}
-
-	//}
-	//// 空中
-	//else {
-
-	//	// 落下速度
-	//	velocity_.y += -kGravityAcceleration;
-	//	// 落下速度制限
-	//	velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
-	//}
-
-#pragma endregion 元のコード
-
-	ChaeckSpaceKey();
-
-	UpMove();
-
-	DownMove();
 
 }
 
-void Player::MapCollision(CollisionMapInfo& info)
+void Enemy::MapCollision(CollisionMapInfo& info)
 {
 
 	MapCollisionUp(info);
@@ -178,7 +69,7 @@ void Player::MapCollision(CollisionMapInfo& info)
 
 }
 
-void Player::MapCollisionUp(CollisionMapInfo& info)
+void Enemy::MapCollisionUp(CollisionMapInfo& info)
 {
 
 
@@ -236,7 +127,7 @@ void Player::MapCollisionUp(CollisionMapInfo& info)
 
 }
 
-void Player::MapCollisionBottom(CollisionMapInfo& info)
+void Enemy::MapCollisionBottom(CollisionMapInfo& info)
 {
 
 	//下降あり?
@@ -296,7 +187,7 @@ void Player::MapCollisionBottom(CollisionMapInfo& info)
 
 }
 
-void Player::MapCollisionRight(CollisionMapInfo& info)
+void Enemy::MapCollisionRight(CollisionMapInfo& info)
 {
 
 	//右移動あり?
@@ -353,10 +244,12 @@ void Player::MapCollisionRight(CollisionMapInfo& info)
 		info.isWallCollision = true;
 	}
 
+
 }
 
-void Player::MapCollisionLeft(CollisionMapInfo& info)
+void Enemy::MapCollisionLeft(CollisionMapInfo& info)
 {
+
 	// 左移動あり?
 	if (info.move.x >= 0) {
 		return;
@@ -413,8 +306,9 @@ void Player::MapCollisionLeft(CollisionMapInfo& info)
 
 }
 
-void Player::MoveAppli(const CollisionMapInfo& info)
+void Enemy::MoveAppli(const CollisionMapInfo& info)
 {
+
 	//移動
 	worldTransform_.translation_.x += info.move.x;
 	worldTransform_.translation_.y += info.move.y;
@@ -422,17 +316,17 @@ void Player::MoveAppli(const CollisionMapInfo& info)
 
 }
 
-void Player::CeilingCollision(const CollisionMapInfo& info)
+void Enemy::CeilingCollision(const CollisionMapInfo& info)
 {
-
 	//天井に当たった?
 	if (info.isCeilingCollision) {
 		velocity_.y = 0;
 	}
 }
 
-void Player::GroundCollision(const CollisionMapInfo& info)
+void Enemy::GroundCollision(const CollisionMapInfo& info)
 {
+
 	//自キャラが設置状態?
 	if (onGround_) {
 
@@ -491,7 +385,7 @@ void Player::GroundCollision(const CollisionMapInfo& info)
 
 }
 
-void Player::WallCollision(const CollisionMapInfo& info)
+void Enemy::WallCollision(const CollisionMapInfo& info)
 {
 
 #pragma region 元のコード
@@ -509,9 +403,8 @@ void Player::WallCollision(const CollisionMapInfo& info)
 
 }
 
-Vector3 Player::CornerPosition(const Vector3& center, Corner corner)
+Vector3 Enemy::CornerPosition(const Vector3& center, Corner corner)
 {
-
 	Vector3 offsetTable[kNumCorner] = {
 		{+kWidth / 2.0f, -kHeight / 2.0f, 0},	//kRightBottom
 		{-kWidth / 2.0f, -kHeight / 2.0f, 0},	//kLeftBottom
@@ -522,92 +415,4 @@ Vector3 Player::CornerPosition(const Vector3& center, Corner corner)
 	return { center.x + offsetTable[static_cast<uint32_t>(corner)].x,
 			center.y + offsetTable[static_cast<uint32_t>(corner)].y,
 			center.z + offsetTable[static_cast<uint32_t>(corner)].z };
-
 }
-
-void Player::ChaeckSpaceKey()
-{
-	//// 前のフレームと今のフレームでスペースキーを押して居なかったらreturn
-	//if (!Input::GetInstance()->PushKey(DIK_SPACE) && !Input::GetInstance()->IsPushKeyPre(DIK_SPACE)) {
-	//	return;
-	//}
-
-	if (!kMoveTimer == 0) {
-   		kMoveTimer--;
-		return;
-	}
-
-	// 上下移動の境界時間
-	int borderTime = 18;
-
-	// スペースキーを押して、isPushSpaceがfalseだったら
-	if (Input::GetInstance()->PushKey(DIK_SPACE) && !Input::GetInstance()->IsPushKeyPre(DIK_SPACE) && !isPushSpace && kMoveTimer == 0) {
-		isPushSpace = true;
-
-		kPushTime += 1;
-	}
-
-	if (isPushSpace) {
-
-		// スペースキーを押しっぱなしだったら
-		if (Input::GetInstance()->PushKey(DIK_SPACE) && Input::GetInstance()->IsPushKeyPre(DIK_SPACE)) {
-			kPushTime += 1;
-		}
-
-		if (kPushTime == borderTime) {
-
-			isDownMove = true;
-
-  			isPushSpace = false;
-
-			kPushTime = 0;
-
-			// インターバルをセット
-			kMoveTimer = kMoveInterval;
-		}
-
-		// スペースキーを離した瞬間
-		else if (!Input::GetInstance()->PushKey(DIK_SPACE) && Input::GetInstance()->IsPushKeyPre(DIK_SPACE)) {
-			isPushSpace = false;
-		}
-
-	}
-
-	if (!isPushSpace && !kPushTime == 0) {
-
-		isUpMove = true;
-
-  		kPushTime = 0;
-
-		// インターバルをセット
-		kMoveTimer = kMoveInterval;
-	}
-
-}
-
-void Player::UpMove()
-{
-
-	if (isUpMove) {
-		worldTransform_.translation_.y += 3.0f;
-	}
-}
-
-void Player::DownMove()
-{
-
-	if (isDownMove) {
-		worldTransform_.translation_.y -= 3.0f;
-	}
-}
-
-void Player::SetIsUpMove(bool flag)
-{
-	isUpMove = flag;
-}
-
-void Player::SetIsDownMove(bool flag)
-{
-	isDownMove = flag;
-}
-

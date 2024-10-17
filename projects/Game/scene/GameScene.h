@@ -15,6 +15,7 @@
 #include "DebugCamera.h"
 #include "ParticleEmitter.h"
 #include "MapChipField.h"
+#include "Enemy.h"
 
 class GameScene : public BaseScene
 {
@@ -34,6 +35,10 @@ private:
 
 	//マップの生成
 	void GeneratrBlocks();
+
+	// プレイヤーと敵の当たり判定
+	void CheckCollision();
+	
 
 	//デバイス
 	DirectXCommon* dxCommon_;
@@ -82,5 +87,10 @@ private:
 	//プレイヤー
 	std::unique_ptr<Player> player_;
 
+	std::unique_ptr<Enemy> enemy_;
+
+	std::list<Enemy*> enemys_;
+	
+	//bool IsVerticalMovement_ = false;
 };
 
