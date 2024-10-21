@@ -20,7 +20,7 @@ void MyGame::Initialize()
 	sceneFactory_ = new SceneFactory();
 	sceneManager_->SetSceneFactory(sceneFactory_);
 	//シーンマネージャに最初のシーンをセット
-	sceneManager_->ChengeScene("GAMEPLAY");
+	sceneManager_->ChengeScene("TITLE");
 
 }
 
