@@ -14,14 +14,20 @@ void Enemy::Initialize(Model* model)
 
 	worldTransform_.Initialize();
 
-	Vector3 startVelocity = { 0.025f,0.0f,0.0f };
+
+
+	Vector3 startVelocity = { -0.025f,0.0f,0.0f };
 
 	velocity_ = startVelocity;
 
+	LRDirection lrDirection_ = LRDirection::kRight;
+
+	turnTimer_ = 0.0f;
 }
 
 void Enemy::Update()
 {
+	//CornerPosition();
 
 	//移動入力
 	Move();
@@ -64,6 +70,7 @@ void Enemy::Move()
 
 		// 状態に応じた角度を取得する
 		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
+
 		// 自キャラの角度を設定する
 		worldTransform_.rotation_.y = turnFirstRotationY_ * EaseOut(turnTimer_) + destinationRotationY * (1 - EaseOut(turnTimer_));
 	}
@@ -73,8 +80,8 @@ void Enemy::Move()
 void Enemy::MapCollision(CollisionMapInfo& info)
 {
 
-	MapCollisionUp(info);
-	MapCollisionBottom(info);
+	//MapCollisionUp(info);
+	//MapCollisionBottom(info);
 	MapCollisionRight(info);
 	MapCollisionLeft(info);
 

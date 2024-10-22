@@ -51,6 +51,10 @@ void GameScene::Initialize() {
 	modelPlayer_->Initialize(modelPlatform_);
 	modelPlayer_->CreateModel("./resources/player", "Player.obj");
 	
+	modelEnemy_ = std::make_unique<Model>();
+	modelEnemy_->Initialize(modelPlatform_);
+	modelEnemy_->CreateModel("./resources/enemy", "enemy.obj");
+
 	modelBlock_ = std::make_unique<Model>();
 	modelBlock_->Initialize(modelPlatform_);
 	modelBlock_->CreateModel("./resources/block", "block.obj");
@@ -78,6 +82,10 @@ void GameScene::Initialize() {
 	modelWallThorn_ = std::make_unique<Model>();
 	modelWallThorn_->Initialize(modelPlatform_);
 	modelWallThorn_->CreateModel("./resources/thormWall", "thormWall.obj");
+
+	modelGoal_ = std::make_unique<Model>();
+	modelGoal_->Initialize(modelPlatform_);
+	modelGoal_->CreateModel("./resources/goal", "goal.obj");
 	
 	/*
 	//テクスチャハンドルの生成
@@ -91,17 +99,19 @@ void GameScene::Initialize() {
 	//プレイヤーの初期化
 	player_ = std::make_unique<Player>();
 	player_->Initialize(modelPlayer_.get());
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 4);
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(12, 13);
 	player_->SetTranslate(playerPosition);
 	player_->SetMapChipField(mapChipField_.get());
 
-	enemy_ = std::make_unique<Enemy>();
+	PopEnemyByMapChip();
+
+	/*enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(modelPlayer_.get());
 	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(2, 7);
 	enemy_->SetTranslate(enemyPosition);
 	enemy_->SetMapChipField(mapChipField_.get());
 
-	enemys_.push_back(enemy_.get());
+	enemys_.push_back(enemy_.get());*/
 
 	//マップの生成
 	GeneratrBlocks();
@@ -205,6 +215,18 @@ void GameScene::Update() {
 			worldTransformWallThorn->scale_.x = 0.5f;
 
 			worldTransformWallThorn->UpdateMatrix();
+		}
+	}
+
+	//ゴールの更新
+	for (std::vector<std::unique_ptr<WorldTransform>>& worldTransformGoalLine : worldTransformGoals_) {
+		for (std::unique_ptr<WorldTransform>& worldTransformGoal : worldTransformGoalLine) {
+			if (!worldTransformGoal) {
+				continue;
+			}
+			//worldTransformGoal->scale_.x = 0.5f;
+
+			worldTransformGoal->UpdateMatrix();
 		}
 	}
 
@@ -352,6 +374,16 @@ void GameScene::Draw() {
 		}
 	}
 
+	//ゴール描画
+	for (std::vector<std::unique_ptr<WorldTransform>>& worldTransformGoalLine : worldTransformGoals_) {
+		for (std::unique_ptr<WorldTransform>& worldTransformGoal : worldTransformGoalLine) {
+			if (!worldTransformGoal) {
+				continue;
+			}
+			modelGoal_->Draw(*worldTransformGoal, mainCamera_);
+		}
+	}
+
 	//Spriteの描画前処理
 	spritePlatform_->PreDraw();
 	
@@ -414,6 +446,7 @@ void GameScene::GeneratrBlocks() {
 	worldTransformThorns_.resize(numBlockVirtical);
 	worldTransformWTSs_.resize(numBlockVirtical);
 	worldTransformWallThorns_.resize(numBlockVirtical);
+	worldTransformGoals_.resize(numBlockVirtical);
 
 	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
 		worldTransformBlocks_[i].resize(numBlockHorizontal);
@@ -423,6 +456,7 @@ void GameScene::GeneratrBlocks() {
 		worldTransformThorns_[i].resize(numBlockHorizontal);
 		worldTransformWTSs_[i].resize(numBlockHorizontal);
 		worldTransformWallThorns_[i].resize(numBlockHorizontal);
+		worldTransformGoals_[i].resize(numBlockHorizontal);
 	}
 
 	// キューブと床の生成
@@ -476,6 +510,13 @@ void GameScene::GeneratrBlocks() {
 				worldTransformWallThorns_[i][j]->Initialize();
 				worldTransformWallThorns_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
 			}
+
+			//ゴールの生成
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kGoal) {
+				worldTransformGoals_[i][j] = std::make_unique<WorldTransform>();
+				worldTransformGoals_[i][j]->Initialize();
+				worldTransformGoals_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
 		}
 	}
 }
@@ -526,6 +567,35 @@ void GameScene::CheckCollision()
 				}
 
 			}
+		}
+	}
+}
+
+void GameScene::PopEnemyByMapChip()
+{
+	for (int i = 0; i < int(mapChipField_->GetNumBlockVirtical()); ++i) {
+		for (int j = 0; j < int(mapChipField_->GetNumBlockHorizontal()); ++j) {
+
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kSpawnSpace) {
+
+				/*enemy_ = std::make_unique<Enemy>();
+				enemy_->Initialize(modelEnemy_.get());
+				Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(j, i);
+				enemy_->SetTranslate(enemyPosition);
+				enemy_->SetMapChipField(mapChipField_.get());
+
+				enemys_.push_back(enemy_.get());*/
+
+				Enemy* enemy = new Enemy();
+
+				enemy->Initialize(modelEnemy_.get());
+				Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(j, i);
+				enemy->SetTranslate(enemyPosition);
+				enemy->SetMapChipField(mapChipField_.get());
+
+				enemys_.push_back(enemy);
+			}
+
 		}
 	}
 }
