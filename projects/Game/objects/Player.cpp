@@ -15,13 +15,13 @@ void Player::Initialize(Model* model) {
 
 	worldTransform_.scale_ = { 0.5f,0.5f,0.5f };
 
-	worldTransform_.translation_.y = 1.0f;
-
 	worldTransform_.UpdateMatrix();
 
 	Vector3 startVelocity = { 0.025f,0.0f,0.0f };
 
 	velocity_ = startVelocity;
+
+	playerHP_ = 3;
 
 	kMoveTimer = 0;
 }
@@ -161,6 +161,19 @@ void Player::Move()
 
 #pragma endregion 元のコード
 
+	isGoal = false;
+
+	if (kCoolTime_ > 0.0f) {
+
+		kCoolTime_ -= kDeltaTiem;
+
+	}
+
+	if (kCoolTime_ <= 0.0f) {
+
+		canHit = true;
+
+	}
 
 	ChaeckSpaceKey();
 
@@ -330,6 +343,10 @@ void Player::MapCollisionRight(CollisionMapInfo& info)
 	if (mapChipType == MapChipType::kWall) {
 		hit = true;
 	}
+	
+	if (mapChipType == MapChipType::kGoal) {
+		isGoal = true;
+	}
 
 	// 右下点の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom]);
@@ -342,6 +359,10 @@ void Player::MapCollisionRight(CollisionMapInfo& info)
 
 	if (mapChipType == MapChipType::kWall) {
 		hit = true;
+	}
+
+	if (mapChipType == MapChipType::kGoal) {
+		isGoal = true;
 	}
 
 	// ブロックにヒット?
@@ -389,6 +410,10 @@ void Player::MapCollisionLeft(CollisionMapInfo& info)
 		hit = true;
 	}
 
+	if (mapChipType == MapChipType::kGoal) {
+		isGoal = true;
+	}
+
 	// 左下点の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
@@ -400,6 +425,10 @@ void Player::MapCollisionLeft(CollisionMapInfo& info)
 
 	if (mapChipType == MapChipType::kWall) {
 		hit = true;
+	}
+
+	if (mapChipType == MapChipType::kGoal) {
+		isGoal = true;
 	}
 
 	// ブロックにヒット?
@@ -628,3 +657,15 @@ void Player::SetIsDownMove(bool flag)
 	isDownMove = flag;
 }
 
+void Player::IsHitEnemy()
+{
+	kCoolTime_ = kHitInterval_;
+
+	--playerHP_;
+
+	canHit = false;
+
+	if (playerHP_ <= 0) {
+		isAlive_ = false;
+	}
+}

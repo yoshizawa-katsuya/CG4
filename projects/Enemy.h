@@ -109,8 +109,8 @@ private:
 
 
 	//キャラクターの当たり判定サイズ
-	const float kWidth = 0.8f;
-	const float kHeight = 0.8f;
+	const float kWidth = 1.0f;
+	const float kHeight = 1.0f;
 
 	//余白
 	const float kBlank = 0.01f;
