@@ -39,6 +39,7 @@ private:
 	// プレイヤーと敵の当たり判定
 	void CheckCollision();
 	
+	void PopEnemyByMapChip();
 
 	//デバイス
 	DirectXCommon* dxCommon_;
@@ -69,6 +70,8 @@ private:
 	std::vector<std::vector<std::unique_ptr<WorldTransform>>> worldTransformWTSs_;//WTS = WallThornSide
 	//棘の壁( 両方ver )
 	std::vector<std::vector<std::unique_ptr<WorldTransform>>> worldTransformWallThorns_;
+	//ゴール
+	std::vector<std::vector<std::unique_ptr<WorldTransform>>> worldTransformGoals_;
 
 	std::unique_ptr<Camera> camera_;
 	std::unique_ptr<Camera> camera2_;
@@ -83,6 +86,7 @@ private:
 	std::unique_ptr<DirectionalLight> directionalLight_;
 
 	std::unique_ptr<Model> modelPlayer_;
+	std::unique_ptr<Model> modelEnemy_;
 	std::unique_ptr<Model> modelBlock_;
 	std::unique_ptr<Model> modelFloor_;
 	std::unique_ptr<Model> modelWall_;
@@ -90,6 +94,7 @@ private:
 	std::unique_ptr<Model> modelThorn_;
 	std::unique_ptr<Model> modelWTS_;//WTS = WallThornSide
 	std::unique_ptr<Model> modelWallThorn_;
+	std::unique_ptr<Model> modelGoal_;
 
 	//uint32_t textureHandle_;
 	//std::unique_ptr<Sprite> sprite_;
