@@ -44,7 +44,6 @@ void MyGame::Update()
 	//ゲームの処理
 	//gameScene_->Update();
 
-
 	YKFramework::EndFrame();
 
 }
@@ -80,6 +79,5 @@ void MyGame::Draw()
 #endif // _DEBUG
 
 	dxCommon_->PostDraw();
-
 
 }
