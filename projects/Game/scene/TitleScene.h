@@ -31,6 +31,8 @@ private:
 	SpritePlatform* spritePlatform_;
 	ModelPlatform* modelPlatform_;
 
+	LoopSoundData bgm1_;
+	
 	//uint32_t textureHandle_;
 
 	//std::unique_ptr<Sprite> sprite_;
