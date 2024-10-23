@@ -51,13 +51,12 @@ public:
 
 protected:
 
-	D3DResourceLeakChecker leakCheck_;
 
 	WinApp* winApp_ = nullptr;
 	DirectXCommon* dxCommon_ = nullptr;
 	Audio* audio_ = nullptr;
 	SrvHeapManager* srvHeapManager_ = nullptr;
-	ImGuiManager* imGuiManager_ = nullptr;
+	std::unique_ptr<ImGuiManager> imGuiManager_;
 	Input* input_ = nullptr;
 	PrimitiveDrawer* primitiveDrawer_ = nullptr;
 	SpritePlatform* spritePlatform_ = nullptr;

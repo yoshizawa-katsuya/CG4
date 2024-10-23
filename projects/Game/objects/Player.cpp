@@ -17,13 +17,17 @@ void Player::Initialize(Model* model) {
 
 	worldTransform_.UpdateMatrix();
 
-	Vector3 startVelocity = { 0.025f,0.0f,0.0f };
+	Vector3 startVelocity = { 0.075f,0.0f,0.0f };
 
 	velocity_ = startVelocity;
 
 	playerHP_ = 3;
 
 	kMoveTimer = 0;
+
+	lrDirection_ = LRDirection::kRight;
+
+	turnTimer_ = 0.1f;
 }
 
 void Player::Update() {
@@ -300,7 +304,10 @@ void Player::MapCollisionUp(CollisionMapInfo& info)
 		isAlive_ = false;
 	}
 	if (springHit) {
-		worldTransform_.translation_.y += 6.0f;
+
+		velocity_.y = 6.0f;
+
+		//worldTransform_.translation_.y += 6.0f;
 	}
 
 }
@@ -524,15 +531,25 @@ void Player::MapCollisionRight(CollisionMapInfo& info)
 	}
 
 	if (thornWallHit) {
-		isAlive_ = false;
+		if (canHit) {
+			IsHitEnemy();
+		}
 	}
 
 	if (thornHit) {
-		isAlive_ = false;
+		if (canHit) {
+			IsHitEnemy();
+		}
 	}
 
 	if (springHit) {
 		worldTransform_.translation_.y += 6.0f;
+
+		if (worldTransform_.translation_.y >= 24.0f) {
+
+			worldTransform_.translation_.y = 24.0f;
+
+		}
 	}
 
 }
@@ -643,15 +660,29 @@ void Player::MapCollisionLeft(CollisionMapInfo& info)
 	}
 
 	if (thornWallHit) {
-		isAlive_ = false;
+		
+		if (canHit) {
+			IsHitEnemy();
+		}
+
 	}
 
 	if (thornHit) {
-		isAlive_ = false;
+		
+		if (canHit) {
+			IsHitEnemy();
+		}
+
 	}
 
 	if (springHit) {
 		worldTransform_.translation_.y += 6.0f;
+
+		if (worldTransform_.translation_.y >= 24.0f) {
+
+			worldTransform_.translation_.y = 24.0f;
+
+		}
 	}
 
 }
@@ -800,7 +831,7 @@ void Player::ChaeckSpaceKey()
 	}
 
 	// 上下移動の境界時間
-	int borderTime = 18;
+	int borderTime = 12;
 
 	// スペースキーを押して、isPushSpaceがfalseだったら
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE) && !isPushSpace && kMoveTimer == 0) {
@@ -851,7 +882,14 @@ void Player::UpMove()
 {
 
 	if (isUpMove) {
+
+		if (worldTransform_.translation_.y >= 24.0f) {
+			return;
+		}
+
 		worldTransform_.translation_.y += 3.0f;
+
+		//velocity_.y = 3.0f;
 	}
 }
 
@@ -859,7 +897,13 @@ void Player::DownMove()
 {
 
 	if (isDownMove) {
+		if (worldTransform_.translation_.y <= 2.0f) {
+			return;
+		}
+
 		worldTransform_.translation_.y -= 3.0f;
+
+		//velocity_.y = -3.0f;
 	}
 }
 
@@ -884,6 +928,7 @@ void Player::IsHitEnemy()
 	kBlinkingTime_ = 0.1f;
 
 	if (playerHP_ <= 0) {
+
 		isAlive_ = false;
 	}
 }

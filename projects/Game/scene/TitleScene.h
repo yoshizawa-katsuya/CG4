@@ -30,8 +30,6 @@ private:
 
 	SpritePlatform* spritePlatform_;
 	ModelPlatform* modelPlatform_;
-
-	LoopSoundData bgm1_;
 	
 	//uint32_t textureHandle_;
 

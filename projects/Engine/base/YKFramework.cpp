@@ -2,6 +2,9 @@
 
 void YKFramework::Initialize()
 {
+
+	static D3DResourceLeakChecker leakCheck_;
+
 	//ゲームウィンドウの作成
 	winApp_ = new WinApp;
 	winApp_->Initialize();
@@ -20,7 +23,7 @@ void YKFramework::Initialize()
 
 #ifdef _DEBUG
 
-	imGuiManager_ = new ImGuiManager;
+	imGuiManager_ = std::make_unique<ImGuiManager>();
 	imGuiManager_->Initialize(dxCommon_, winApp_, srvHeapManager_);
 
 #endif // _DEBUG
@@ -81,8 +84,7 @@ void YKFramework::Finalize()
 
 	//ImGuiの終了処理
 	imGuiManager_->Finalize();
-	delete imGuiManager_;
-	imGuiManager_ = nullptr;
+	
 
 #endif // _DEBUG
 

@@ -158,7 +158,7 @@ private:
 	bool isPushSpace = false;
 
 	// 上下移動のクールタイム
-	const int kMoveInterval = 30;
+	const int kMoveInterval = 15;
 
 	int kMoveTimer = 0;
 
