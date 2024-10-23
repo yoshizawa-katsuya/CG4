@@ -6,25 +6,25 @@
 
 namespace {
 
-std::map<std::string, MapChipType> mapChipTable = {
-    {"0", MapChipType::kBlank},
-    {"1", MapChipType::kBlock},
-	{"2", MapChipType::kFloor},
-	{"3", MapChipType::kThorn},
-	{"4", MapChipType::kSpring},
-	{"5", MapChipType::kWall},
-	{"6", MapChipType::kWallThorn},
-	{"7", MapChipType::kWallThornSide},
-	{"8", MapChipType::kGoal},
-	{"9", MapChipType::kSpawnSpace},
-};
+	std::map<std::string, MapChipType> mapChipTable = {
+		{"0", MapChipType::kBlank},
+		{"1", MapChipType::kBlock},
+		{"2", MapChipType::kFloor},
+		{"3", MapChipType::kThorn},
+		{"4", MapChipType::kSpring},
+		{"5", MapChipType::kWall},
+		{"6", MapChipType::kWallThorn},
+		{"7", MapChipType::kWallThornSide},
+		{"8", MapChipType::kGoal},
+		{"9", MapChipType::kSpawnSpace},
+	};
 
 }
 
 //マップチップデータをリセット
 void MapChipField::ResetMapChipDate() {
 
-    mapChipData_.data.clear();
+	mapChipData_.data.clear();
 	mapChipData_.data.resize(kNumBlockVirtical);
 	for (std::vector<MapChipType>& mapChipDataLine : mapChipData_.data) {
 		mapChipDataLine.resize(kNumBlockHorizontal);
@@ -44,21 +44,21 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath) {
 	// マップチップCSV
 	std::stringstream mapChipCsv;
 	//ファイルの内容を文字列ストリームにコピー
-	mapChipCsv << file.rdbuf();	
+	mapChipCsv << file.rdbuf();
 	//ファイルを閉じる
 	file.close();
 
 	std::string line;
 
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		
+
 		getline(mapChipCsv, line);
 
 		//1行分の文字列をストリームに変換して解析しやすくする
 		std::istringstream line_stream(line);
 
 		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
-			
+
 			std::string word;
 			getline(line_stream, word, ',');
 
@@ -170,8 +170,7 @@ void MapChipField::RandomLoadMapChipCsv(const std::string& baseFilePath)
 					}
 				}
 			}
-		}
-		else if (index == 2) {
+		} else if (index == 2) {
 
 			filePath = "Resources/csv/playerSpawn.csv";
 
@@ -205,9 +204,8 @@ void MapChipField::RandomLoadMapChipCsv(const std::string& baseFilePath)
 					}
 				}
 			}
-		}
-		else if(index > 2) {
-			
+		} else if (index > 2) {
+
 			//ファイルを開く
 			std::ifstream file;
 			file.open(filePath);
